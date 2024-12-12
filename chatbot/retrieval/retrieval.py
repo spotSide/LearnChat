@@ -1,29 +1,28 @@
 import json
 
-
 class Retrieval:
     def __init__(self, data_path: str = "./data/newjeans.json"):
-        with open(data_path, "r") as file:
-            data: dict[str, str] = json.load(file)
-            self.data = data
+        try:
+            with open(data_path, "r", encoding="utf-8") as file:
+                # JSON 파일을 읽어와서 딕셔너리로 저장
+                data: dict[str, str] = json.load(file)
+                self.data =data
+        except FileNotFoundError:
+            # 파일이 존재하지 않을 경우 빈 딕셔너리로 초기화
+            print(f"파일을 찾을 수 없습니다: {data_path}")
+            self.data = {}
 
     def retrieve(self, query: str) -> str | None:
-        # ####
-        # 이 주석을 지우고 다음 코드를 완성해보자.
-        # query 는 유저의 발화문이다. self.data 에는 json 값이 key-value 형태로 저장되어 있다.
-        # 만약 query 가 json 의 key 값을 키워드로 포함하고 있으면 "{key}: {value}" 를 str 으로 리턴하자.
-        # 아니라면 None 을 리턴하자.
-        #
-        # 예시 1:
-        # query: who is minji? ("minji" is in json key)
-        # @ return "minji: The leader of NewJeans..."
-        # 
-        #
-        # 예시 2:
-        # query: this is an empty query (None of the json key matches)
-        # @ return None
-        # ###
-        pass
+        # 쿼리를 소문자로 변환하여 대소문자 구분 없이 검색
+        query_lower = query.lower()
+        for key in self.data.keys():
+            # 키를 소문자로 변환하여 쿼리에 포함되어 있는지 확인
+            if key.lower() in query_lower:
+                # 일치하는 키가 있으면 "키: 값" 형태의 문자열 반환
+                return f"{key}: {self.data[key]}"
+        # 일치하는 키가 없으면 None 반환
+        return None
 
     def print_data(self) -> None:
-        print(self.data)
+        # 데이터 딕셔너리를 예쁘게 출력
+        print(json.dumps(self.data, indent=2, ensure_ascii=False))
